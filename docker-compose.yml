@@ -1,0 +1,104 @@
+---
+
+services:
+  kupriian1_backend:
+    container_name: kupriian1_wp_php
+    build: 
+      context: .
+      dockerfile: backend.kupriian1.dockerfile
+    volumes:
+      - ./wordpress:/var/www/html
+      - ./wp-conf/kupriian1-wp-config.php:/var/www/html/wp-config.php
+      - ./themes:/var/www/html/wp-content/themes
+      - ./plugins:/var/www/html/wp-content/plugins
+    restart: unless-stopped
+    ports:
+      - 8081:9000
+    depends_on:
+      - kupriian1_database
+    networks:
+      - kupriian1_network
+
+  kupriian2_backend:
+    container_name: kupriian2_opencart_php
+    build: 
+      context: .
+      dockerfile: backend.kupriian2.dockerfile
+    volumes:
+      - ./opencart/upload:/var/www/html 
+    restart: unless-stopped
+    ports:
+      - 8082:80
+    depends_on:
+      - kupriian2_database
+    networks:
+      - kupriian2_network
+    
+  kupriian3_backend:
+    container_name: kupriian3_wp_php
+    build: 
+      context: .
+      dockerfile: backend.kupriian3.dockerfile
+    volumes:
+      - ./wordpress:/var/www/html
+      - ./wp-conf/kupriian3-wp-config.php:/var/www/html/wp-config.php
+      - ./themes:/var/www/html/wp-content/themes
+      - ./plugins:/var/www/html/wp-content/plugins
+    restart: unless-stopped
+    ports:
+      - 8083:9000
+    depends_on:
+      - kupriian3_database
+    networks:
+      - kupriian3_network
+  
+  kupriian1_database:
+    container_name: kupriian1_mysql
+    image: mariadb:latest
+    restart: unless-stopped
+    environment:
+      MARIADB_USER: default
+      MARIADB_PASSWORD: default
+      MARIADB_DATABASE: wordpress
+      MARIADB_ROOT_PASSWORD: default
+    volumes:
+      - ./kupriian1-mariadb:/var/lib/mysql:Z
+    networks:
+      - kupriian1_network
+
+  kupriian2_database:
+    container_name: kupriian2_mysql
+    image: mariadb:latest
+    restart: unless-stopped
+    environment:
+      MARIADB_USER: default
+      MARIADB_PASSWORD: default
+      MARIADB_DATABASE: opencart
+      MARIADB_ROOT_PASSWORD: default
+    volumes:
+      - ./kupriian2-mariadb:/var/lib/mysql:Z
+    networks:
+      - kupriian2_network
+
+  kupriian3_database:
+    container_name: kupriian3_mysql
+    image: mariadb:latest
+    restart: unless-stopped
+    environment:
+      MARIADB_USER: default
+      MARIADB_PASSWORD: default
+      MARIADB_DATABASE: wordpress
+      MARIADB_ROOT_PASSWORD: default
+    volumes:
+      - ./kupriian3-mariadb:/var/lib/mysql:Z
+    networks:
+      - kupriian3_network
+  
+    
+networks:
+  kupriian1_network:
+    driver: bridge
+  kupriian2_network:
+    driver: bridge
+  kupriian3_network:
+    driver: bridge
